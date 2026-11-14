@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { eventsController } from './event.controller.js';
+import { eventInputSchema } from './event.validation.js';
+import { validateBody } from '../../middleware/validate.js';
+export const eventsPublicRouter = Router();
+eventsPublicRouter.get('/', eventsController.list);
+eventsPublicRouter.get('/:slug', eventsController.getBySlug);
+export const eventsAdminRouter = Router();
+eventsAdminRouter.get('/', eventsController.adminList);
+eventsAdminRouter.get('/:id', eventsController.getById);
+eventsAdminRouter.post('/', validateBody(eventInputSchema), eventsController.create);
+eventsAdminRouter.put('/:id', validateBody(eventInputSchema), eventsController.update);
+eventsAdminRouter.delete('/:id', eventsController.archive);
+eventsAdminRouter.get('/:id/preview', eventsController.preview);

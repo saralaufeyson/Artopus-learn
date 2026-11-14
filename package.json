@@ -1,0 +1,37 @@
+{
+  "name": "artopus-learn",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=9"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run build -w @artopus/shared && concurrently -k -n contracts,api,web \"npm run dev -w @artopus/shared\" \"npm run dev -w @artopus/api\" \"npm run dev -w @artopus/web\"",
+    "dev:web": "npm run build -w @artopus/shared && npm run dev -w @artopus/web",
+    "dev:api": "npm run build -w @artopus/shared && npm run dev -w @artopus/api",
+    "build": "node scripts/run-checks.mjs build",
+    "typecheck": "node scripts/run-checks.mjs typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "test": "node scripts/run-checks.mjs test",
+    "check": "node scripts/run-checks.mjs check",
+    "seed:demo": "npm run build -w @artopus/shared && npm run seed:demo -w @artopus/api",
+    "admin:user": "npm run admin:user -w @artopus/api --",
+    "content:business": "npm run build -w @artopus/shared && npm run content:business -w @artopus/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "concurrently": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.2.0"
+  }
+}

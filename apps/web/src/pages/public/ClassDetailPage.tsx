@@ -1,0 +1,17 @@
+import { useParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
+import { Check } from 'lucide-react';
+import { classQuery } from '../../services/public-queries';
+import { QueryState } from '../../components/content/QueryState';
+import { ActionLink, Breadcrumb, DemoBadge, DetailFact, MediaImage, RichText, formatFee, formatClassMode } from '../../components/content/PublicPrimitives';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+export function ClassDetailPage() {
+  const { slug = '' } = useParams();
+  const query = useQuery(classQuery(slug));
+  const offering = query.data;
+  useDocumentTitle(offering?.title || 'Drawing class');
+  return <QueryState pending={query.isPending} error={query.error} retry={() => { void query.refetch(); }}>{offering && <article className="container-art py-10 md:py-14"><Breadcrumb href="/classes" label="All drawing classes" /><div className="grid gap-10 lg:grid-cols-[1.5fr_1fr]"><div><DemoBadge isDemo={offering.isDemo} /><p className="eyebrow mt-5">Drawing classes</p><h1 className="page-title">{offering.title}</h1><div className="mt-7 overflow-hidden rounded-3xl border border-line"><MediaImage image={offering.thumbnail} /></div><div className="mt-8"><RichText html={offering.description} /></div>{offering.learningObjectives.length > 0 && <section className="mt-10"><h2 className="text-2xl font-semibold">What you will explore</h2><ul className="mt-5 grid gap-3">{offering.learningObjectives.map(item => <li key={item} className="flex items-start gap-3 text-muted"><Check className="mt-1 shrink-0 text-accent" size={17} aria-hidden="true" />{item}</li>)}</ul></section>}{offering.mediums.length > 0 && <section className="mt-10"><h2 className="text-2xl font-semibold">Tools for your imagination</h2><div className="mt-4 flex flex-wrap gap-2">{offering.mediums.map(item => <span key={item} className="pill">{item}</span>)}</div></section>}
+    {offering.instructor?.name && <section className="mt-10"><h2 className="text-2xl font-semibold">Meet your instructor</h2><p className="mt-4 font-medium">{offering.instructor.name}</p><p className="mt-2 leading-7 text-muted">{offering.instructor.biography}</p></section>}
+    {offering.faqs.length > 0 && <section className="mt-12"><h2 className="mb-5 text-2xl font-semibold">A few things you might wonder</h2>{offering.faqs.map(faq => <details key={faq.question} className="faq-item"><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</section>}</div>
+    <aside className="self-start rounded-3xl border border-line bg-surface p-7 lg:sticky lg:top-6"><h2 className="text-xl font-semibold">A closer look</h2><dl className="mt-3"><DetailFact label="Age group">{offering.ageGroup}</DetailFact><DetailFact label="Learning mode">{formatClassMode(offering.classMode)}</DetailFact><DetailFact label="Schedule">{offering.schedule || 'Contact us for current timings'}</DetailFact>{offering.duration && <DetailFact label="Duration">{offering.duration}</DetailFact>}<DetailFact label="Fees">{formatFee(offering.fee)}</DetailFact></dl><div className="mt-6"><ActionLink href={offering.registrationUrl}>{'Register for this class'}</ActionLink>{!offering.registrationUrl && <><p className="mb-5 text-sm leading-6 text-muted">{offering.isDemo ? 'This is a sample program. Ask us about actual class availability.' : 'Ask us about availability and registration.'}</p><ActionLink href="/contact" secondary>Ask about classes</ActionLink></>}</div></aside></div></article>}</QueryState>;
+}

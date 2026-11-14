@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { mediaController } from './media.controller.js';
+import { mediaUpdateSchema } from './media.validation.js';
+import { validateBody } from '../../middleware/validate.js';
+import { validateImageUpload } from '../../middleware/upload.js';
+import { rateLimit } from 'express-rate-limit';
+export const mediaAdminRouter = Router();
+mediaAdminRouter.get('/', mediaController.list);
+const uploadLimit = rateLimit({ windowMs: 60 * 60 * 1000, limit: 30, standardHeaders: 'draft-8', legacyHeaders: false });
+mediaAdminRouter.post('/', uploadLimit, validateImageUpload, mediaController.upload);
+mediaAdminRouter.patch('/:id', validateBody(mediaUpdateSchema), mediaController.update);
+mediaAdminRouter.delete('/:id', mediaController.remove);

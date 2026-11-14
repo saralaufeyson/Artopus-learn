@@ -1,0 +1,15 @@
+import { Router } from 'express';
+import { blogsController } from './blog.controller.js';
+import { blogInputSchema } from './blog.validation.js';
+import { validateBody } from '../../middleware/validate.js';
+export const blogsPublicRouter = Router();
+blogsPublicRouter.get('/categories', blogsController.categories);
+blogsPublicRouter.get('/', blogsController.list);
+blogsPublicRouter.get('/:slug', blogsController.getBySlug);
+export const blogsAdminRouter = Router();
+blogsAdminRouter.get('/', blogsController.adminList);
+blogsAdminRouter.get('/:id', blogsController.getById);
+blogsAdminRouter.post('/', validateBody(blogInputSchema), blogsController.create);
+blogsAdminRouter.put('/:id', validateBody(blogInputSchema), blogsController.update);
+blogsAdminRouter.delete('/:id', blogsController.archive);
+blogsAdminRouter.get('/:id/preview', blogsController.preview);

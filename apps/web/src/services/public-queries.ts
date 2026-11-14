@@ -1,0 +1,11 @@
+import { queryOptions } from '@tanstack/react-query';
+import type { ArtEvent, BlogDetail, BlogPost, ClassOffering, PaginatedResult, PublicSiteSettings } from '@artopus/shared';
+import { apiRequest } from './api-client';
+export const settingsQuery = () => queryOptions({ queryKey: ['site-settings'], queryFn: () => apiRequest<PublicSiteSettings>('/settings') });
+export const categoriesQuery = () => queryOptions({ queryKey: ['blog-categories'], queryFn: () => apiRequest<string[]>('/blogs/categories') });
+export const blogsQuery = (query = 'limit=6') => queryOptions({ queryKey: ['blogs', query], queryFn: () => apiRequest<PaginatedResult<BlogPost>>('/blogs?' + query) });
+export const eventsQuery = (query = 'limit=6') => queryOptions({ queryKey: ['events', query], queryFn: () => apiRequest<PaginatedResult<ArtEvent>>('/events?' + query) });
+export const classesQuery = (query = 'limit=12') => queryOptions({ queryKey: ['classes', query], queryFn: () => apiRequest<PaginatedResult<ClassOffering>>('/classes?' + query) });
+export const blogQuery = (slug: string) => queryOptions({ queryKey: ['blog', slug], queryFn: () => apiRequest<BlogDetail>('/blogs/' + encodeURIComponent(slug)) });
+export const eventQuery = (slug: string) => queryOptions({ queryKey: ['event', slug], queryFn: () => apiRequest<ArtEvent>('/events/' + encodeURIComponent(slug)) });
+export const classQuery = (slug: string) => queryOptions({ queryKey: ['class', slug], queryFn: () => apiRequest<ClassOffering>('/classes/' + encodeURIComponent(slug)) });

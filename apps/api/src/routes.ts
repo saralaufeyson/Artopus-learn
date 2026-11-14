@@ -1,0 +1,34 @@
+import { Router } from 'express';
+import { analyticsRouter } from './modules/analytics/analytics.routes.js';
+import { settingsController } from './modules/settings/settings.controller.js';
+import { authRouter } from './modules/auth/auth.routes.js';
+import { blogsPublicRouter, blogsAdminRouter } from './modules/blogs/blog.routes.js';
+import { eventsPublicRouter, eventsAdminRouter } from './modules/events/event.routes.js';
+import { classesPublicRouter, classesAdminRouter } from './modules/classes/class.routes.js';
+import { mediaAdminRouter } from './modules/media/media.routes.js';
+import { settingsPublicRouter, settingsAdminRouter } from './modules/settings/settings.routes.js';
+import { requireAdmin, requireOwner } from './middleware/require-admin.js';
+import { requireCsrf } from './middleware/csrf.js';
+import { getDashboard } from './modules/admin/dashboard.service.js';
+export const apiRouter = Router();
+apiRouter.get('/content/routes', settingsController.routes);
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/blogs', blogsPublicRouter);
+apiRouter.use('/events', eventsPublicRouter);
+apiRouter.use('/classes', classesPublicRouter);
+apiRouter.use('/settings', settingsPublicRouter);
+apiRouter.use('/analytics', analyticsRouter);
+const adminRouter = Router();
+adminRouter.use((_request, response, next) => { response.set('Cache-Control', 'no-store'); next(); });
+adminRouter.use(requireAdmin);
+adminRouter.use((request, response, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) { next(); return; }
+  requireCsrf(request, response, next);
+});
+adminRouter.get('/dashboard', async (_request, response) => { response.json({ data: await getDashboard() }); });
+adminRouter.use('/blogs', blogsAdminRouter);
+adminRouter.use('/events', eventsAdminRouter);
+adminRouter.use('/classes', classesAdminRouter);
+adminRouter.use('/media', mediaAdminRouter);
+adminRouter.use('/settings', requireOwner, settingsAdminRouter);
+apiRouter.use('/admin', adminRouter);
