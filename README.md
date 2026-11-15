@@ -45,7 +45,7 @@ Public queries exclude drafts, scheduled/future posts and inactive classes. Feat
 
 ## Administrator access
 
-Open http://localhost:5173/admin/login and request a code for an approved account. The sender is contact@artopusindia.com. Configure SMTP_HOST, SMTP_PORT (465 or 587), SMTP_USER and SMTP_PASS in apps/api/.env; SMTP_USERNAME and SMTP_PASSWORD are also accepted. No credentials belong in browser variables.
+Open http://localhost:5173/admin/login and request a code for an approved account. The sender is contact@artopusindia.com. Set RESEND_API_KEY in apps/api/.env or the Render service environment and verify artopusindia.com in Resend. Delivery uses the HTTPS API; RESEND_API_KEY is required when NODE_ENV=production. No credentials belong in browser variables.
 
 Approve an account using npm run admin:user -- person@example.com "Display name" admin active. Use editor for content-only access or disabled to revoke access. There is no public signup. See [OTP setup and security](docs/AUTHENTICATION.md).
 

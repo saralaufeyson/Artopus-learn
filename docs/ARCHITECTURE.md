@@ -12,6 +12,6 @@ The API catches up scheduled publications on startup and promotes due records ea
 
 The web production build renders public pages and published detail routes using the API, then hydrates the serialized query data. Private drafts are never included. Noindex remains enabled. Existing static HTML needs rebuilding after edits, publishing, scheduling or unpublication; automatic invalidation, sitemap/structured data and host-level HTTP 404 handling remain Phase 4 gates.
 
-Local development uses the Windows launcher or npm run dev. Environment aliases support MONGO_URI, SMTP_USERNAME and SMTP_PASSWORD while preserving canonical example names. The check runner invokes package scripts directly and propagates child failures, avoiding npm 9 workspace exit-code masking on Windows.
+Local development uses the Windows launcher or npm run dev. MONGO_URI remains an alias for MONGODB_URI. OTP delivery uses the Resend HTTPS API and requires RESEND_API_KEY in production. The check runner invokes package scripts directly and propagates child failures, avoiding npm 9 workspace exit-code masking on Windows.
 
 Generated HTML records its rendered path. The client hydrates only a matching unfiltered document; direct admin SPA fallbacks and query-filter URLs mount fresh views. This avoids hydrating homepage markup as a different route. Hosting-level public 404 and invalidation rules still need production configuration.

@@ -7,15 +7,12 @@ The requested email OTP flow replaces password login. Only active, explicitly ap
 Keep these server-side values in apps/api/.env (never VITE variables):
 
 ```dotenv
-SMTP_HOST=your-mail-provider-host
-SMTP_PORT=465
-SMTP_USER=authorized-mailbox-user
-SMTP_PASS=your-mail-provider-app-password
+RESEND_API_KEY=your-resend-api-key
 ```
 
-SMTP_USERNAME and SMTP_PASSWORD are accepted aliases. The sender is fixed to contact@artopusindia.com; SMTP_FROM does not override it. The provider must permit this sender. Port 465 uses implicit TLS; port 587 requires STARTTLS. Certificate verification stays enabled. Restart the API after editing its environment. Verify SPF/DKIM/DMARC and inbox delivery with the mailbox provider before production.
+The sender is fixed to Artopus India <contact@artopusindia.com>. Verify artopusindia.com in [Resend](https://resend.com/docs/dashboard/domains/introduction) and configure the API key on the Render service. Production startup requires a nonblank RESEND_API_KEY. Development/test may start without it, but OTP requests then fail closed. Restart or redeploy after changing the environment.
 
-The configured SMTP connection/authentication was verified in this workspace. That check alone does not prove inbox delivery.
+Delivery uses POST https://api.resend.com/emails over HTTPS with a ten-second timeout and no automatic retries. This avoids the SMTP ports blocked on [Render Free](https://render.com/docs/free). Non-success responses, network/timeouts and invalid provider responses return the existing generic MAIL_UNAVAILABLE error without exposing provider details. No SMTP configuration is used.
 
 ## Approve an administrator
 
@@ -33,13 +30,13 @@ Open http://localhost:5173/admin/login, enter the approved email and request a c
 
 - Cryptographically random six-digit codes; only purpose-separated HMAC digests are stored.
 - Atomic one-time consumption and attempt accounting; explicit expiry checks independent of MongoDB TTL cleanup.
-- No OTPs, SMTP credentials or authentication tokens are logged or stored in browser localStorage.
+- No OTPs, API keys or authentication tokens are logged or stored in browser localStorage.
 - Session ID rotates after verification. Session records live in MongoDB; cookies are HTTP-only and SameSite=Lax.
 - Production cookies require HTTPS and have Secure set. Sessions have an absolute eight-hour lifetime.
 - CSRF tokens are session-bound and required on sign-in, verification, sign-out and content mutations, together with an exact Origin match.
 - Private API responses use Cache-Control: no-store. Responses never contain codes or password hashes.
 - Unknown/disabled addresses get the same request message without sending an email or creating an account.
-- Missing mail configuration and SMTP failures fail closed; there is no development code bypass.
+- Missing mail configuration and Resend failures fail closed; there is no development code bypass.
 
 Set WEB_ORIGIN to the exact frontend origin. Keep frontend and API on the same site, preferably proxying /api to the API. Only set TRUST_PROXY_HOPS to the exact number of trusted reverse proxies; leave zero for a directly served local API. MONGODB_URI is the canonical database setting; MONGO_URI is accepted as an alias.
 
@@ -47,4 +44,4 @@ Set WEB_ORIGIN to the exact frontend origin. Keep frontend and API on the same s
 
 admin.integration.test.ts uses a unique temporary MongoDB database and an injected test mailer. Test codes exist only inside the test process. It exercises expiry, attempts, resend, replay, simultaneous verification, disabled users, roles, CSRF/origin, cookie flags, session lifetime, rate limits, delivery failures and authenticated CMS operations.
 
-Live verification on 2026-11-14: the login screen requested an OTP through the configured SMTP service as contact@artopusindia.com. SMTP accepted it for the approved administrator. Inbox receipt was not independently checked. Automated tests and browser fixtures verify code consumption without reading or logging real codes.
+Resend adapter/configuration tests cover successful acceptance, provider HTTP errors, network/timeouts, malformed responses, missing production configuration and secret-free error handling. They mock HTTPS delivery and send no real emails; live Resend acceptance and inbox receipt have not been verified.

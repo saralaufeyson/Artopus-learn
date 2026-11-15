@@ -66,10 +66,10 @@ beforeAll(async () => {
   });
 }, 20000);
 function loadEnvForTest() {
-  return { ...loadEnvWithDefaults(), PORT: 4000, WEB_ORIGIN: origin, SMTP_PORT: 465, TRUST_PROXY_HOPS: 0 };
+  return { ...loadEnvWithDefaults(), PORT: 4000, WEB_ORIGIN: origin, TRUST_PROXY_HOPS: 0 };
 }
 function loadEnvWithDefaults() {
-  // Parse explicit test configuration; never use a developer's SMTP credentials.
+  // Parse explicit test configuration; delivery uses only the injected test mailer.
   const previous = { ...process.env };
   try {
     Object.assign(process.env, { NODE_ENV: 'test', MONGODB_URI: 'mongodb://127.0.0.1:27017', WEB_ORIGIN: origin, SESSION_SECRET: 'test-only-secret-at-least-thirty-two-characters' });
