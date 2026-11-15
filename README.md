@@ -12,7 +12,7 @@ MongoDB must be running locally or configured through `apps/api/.env`. The defau
 
 ## Setup and demo content
 
-Use Node.js 22.12+ and npm 9+. Run commands from this directory.
+Use Node.js 22.x (22.12 or later) and npm 9+. Run commands from this directory.
 
 ```powershell
 npm ci
@@ -101,6 +101,8 @@ docs/             Architecture, API, models, components and theme
 - [Contributor instructions](AGENTS.md)
 
 ## Deployment
+
+For the backend service, follow the exact build/start settings in [Render backend deployment](docs/RENDER.md). Build-time installs must include development dependencies.
 
 The CMS is implemented; production content regeneration, SEO and deployment gates remain. After the remaining phases pass, host the generated `apps/web/dist` HTML/assets with directory-index support. Keep `dist/server` out of public serving and serve the generated 404 document with a real 404 status. Route API requests to the persistent Node service and configure the admin route fallback separately from public content.
 

@@ -181,3 +181,10 @@ The counter measures page views, including repeat visits, rather than unique peo
 - Authentication service/routes, expiry, atomic consumption, resend/attempt/IP limits, sessions and unrelated application modules were unchanged. Updated only mail/configuration tests, the obsolete SMTP test fixture and corresponding setup documentation.
 - Verification passed: 81 backend tests (including 25 new delivery/configuration cases), npm run typecheck for all workspaces, direct backend TypeScript build, ESLint for the changed API files, and git diff --check. Existing MongoDB integration tests used isolated temporary databases.
 - HTTPS was mocked; no real OTP email was sent, and live Resend acceptance/inbox receipt was not checked. The Render service needs RESEND_API_KEY and artopusindia.com verified in Resend. No local credential file or deployment was modified.
+
+## Render backend build fix - 2026-11-15
+
+- Diagnosed the supplied deployment log: repository checkout succeeded, but the API compile lacked TypeScript's development declarations and Node globals. A production-only install in an isolated temporary copy reproduced the absence of TypeScript and all six required @types packages.
+- Verified npm ci --include=dev with NODE_ENV=production restored all seven build packages. Shared and API TypeScript compilation and a syntax check of the compiled server passed in that clean copy, without .env files, database access or email delivery.
+- Bounded the root Node engine to >=22.12.0 <23 and synchronized the lockfile, preventing the unbounded range from selecting Node 26. Added docs/RENDER.md with repository-root build/start/health settings and linked it from README.
+- Application modules and dependency versions were unchanged. No new tests were added for this installation/configuration fix. The existing Render service still needs its Build Command updated and the local version-range change pushed/redeployed; no remote deployment was performed.
