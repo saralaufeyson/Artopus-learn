@@ -4,6 +4,8 @@ coverage/
 .env
 .env.*
 !.env.example
+# Only public frontend deployment URLs are tracked; credential files stay ignored.
+!apps/web/.env.production
 *.log
 *.tsbuildinfo
 .DS_Store

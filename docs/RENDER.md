@@ -21,3 +21,27 @@ After pushing the version-range change, update the existing service's build comm
 The reported TS7016 errors for Express/CORS/session/Multer/sanitize-html and missing Node globals (process, Buffer, fetch, AbortSignal and timers) point to omitted development dependencies. Restore them at install time; the declaration packages already exist in the API manifest. Keep strict TypeScript checks enabled.
 
 The initial repository-access warning in the supplied log was followed by a successful checkout of commit 358a702 and execution of the build. The failure shown in that log occurred later during TypeScript compilation.
+
+## Frontend API routing
+
+The production frontend is https://learn.artopusindia.com and the Render API custom domain is https://api.learn.artopusindia.com. The repository's apps/web/.env.production contains only these public build settings:
+
+```dotenv
+VITE_API_BASE_URL=https://api.learn.artopusindia.com/api/v1
+VITE_PRERENDER_API_URL=https://api.learn.artopusindia.com/api/v1
+VITE_SITE_URL=https://learn.artopusindia.com
+```
+
+Keep WEB_ORIGIN=https://learn.artopusindia.com on the Render backend. The custom API domain keeps browser requests on the same HTTPS site as the frontend while the existing credentialed CORS policy allows that exact frontend origin. The API client already includes cookies; the existing Secure/HTTP-only/SameSite=Lax session settings remain in use.
+
+Set the same VITE values on the frontend hosting service if it defines build-time environment variables. In particular, replace an existing VITE_API_BASE_URL=/api/v1 setting there: hosting environment values override .env.production. Rebuild and redeploy the frontend after changing them because Vite embeds these values in its JavaScript bundle. See [Vite environment priorities](https://vite.dev/guide/env-and-mode#env-files).
+
+For a frontend build from the repository root, use:
+
+```sh
+npm ci --include=dev && npm run build -w @artopus/shared && npm run build -w @artopus/web
+```
+
+Publish apps/web/dist and keep dist/server out of public serving. Prerendering reads published public content from the custom API URL. Local development continues to read the existing apps/web/.env and uses the Vite /api proxy.
+
+If a POST to https://learn.artopusindia.com/api/v1/analytics/page-views returns 405 and GET requests to /api/v1/settings return the homepage HTML, the old frontend bundle is still using a relative API URL without a production proxy. Requests from the corrected bundle should target https://api.learn.artopusindia.com/api/v1/... instead.

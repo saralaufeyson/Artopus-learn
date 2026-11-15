@@ -102,7 +102,7 @@ docs/             Architecture, API, models, components and theme
 
 ## Deployment
 
-For the backend service, follow the exact build/start settings in [Render backend deployment](docs/RENDER.md). Build-time installs must include development dependencies.
+For the backend service, follow the exact build/start settings in [Render backend deployment](docs/RENDER.md). Build-time installs must include development dependencies. Production frontend API URLs are tracked in apps/web/.env.production; frontend host environment overrides must use the same custom API domain.
 
 The CMS is implemented; production content regeneration, SEO and deployment gates remain. After the remaining phases pass, host the generated `apps/web/dist` HTML/assets with directory-index support. Keep `dist/server` out of public serving and serve the generated 404 document with a real 404 status. Route API requests to the persistent Node service and configure the admin route fallback separately from public content.
 
